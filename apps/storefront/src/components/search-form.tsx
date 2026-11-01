@@ -16,10 +16,18 @@ function todayInPakistan() {
   }).format(new Date())
 }
 
-export function SearchForm({ compact = false }: { compact?: boolean }) {
+export function SearchForm({
+  compact = false,
+  initialDate = "",
+  initialCity = CITIES[0],
+}: {
+  compact?: boolean
+  initialDate?: string
+  initialCity?: string
+}) {
   const router = useRouter()
-  const [date, setDate] = useState("")
-  const [city, setCity] = useState<string>(CITIES[0])
+  const [date, setDate] = useState(initialDate)
+  const [city, setCity] = useState(initialCity)
 
   function onSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault()

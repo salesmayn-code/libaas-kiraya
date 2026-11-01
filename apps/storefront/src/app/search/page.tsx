@@ -50,7 +50,11 @@ export default async function SearchPage({ searchParams }: PageProps<"/search">)
             {cityParam ? ` in ${cityParam}` : ""}
           </h1>
           <div className="mt-5 max-w-2xl">
-            <SearchForm compact />
+            <SearchForm
+              compact
+              initialDate={dateParam ?? ""}
+              initialCity={cityParam ?? "Rawalpindi"}
+            />
           </div>
           <p className="mt-4 text-sm text-dhundla">
             {dateParam

@@ -8,11 +8,13 @@ Multi-vendor rental marketplace for occasion wear in Pakistan. Medusa v2 backend
 |---|---|
 | ![Search](docs/screenshots/search.png) | ![Listing](docs/screenshots/listing.png) |
 
+Demo product photography sourced from Pexels under the [Pexels license](https://www.pexels.com/license/) ([photo credits](apps/storefront/public/images/seed/CREDITS.md)).
+
 ## What works today
 
 - Customer and vendor auth actors (vendor is a custom actor type, not admin auth).
 - Vendor onboarding, admin approval/rejection, vendor listing/unit/publish APIs.
-- Seeded catalog with 6 vendors, 21 live listings, images, units and customers.
+- Seeded catalog with 6 vendors, 21 live listings, stock product photography, units and customers.
 - Date-aware search, availability calendar endpoint, quote endpoint.
 - 15-minute holds with a PostgreSQL exclusion constraint (`23P01` guards every overlap); verified 50-parallel reserve check yields exactly one winner.
 - Cart integration with custom rental line price, removal, checkout, custom simulated-wallet payments, booking confirmation and secured deposit.

@@ -1,6 +1,10 @@
 import type { ExecArgs } from "@medusajs/framework/types"
-import { ContainerRegistrationKeys, Modules } from "@medusajs/framework/utils"
-import { createProductsWorkflow, updateRegionsWorkflow } from "@medusajs/medusa/core-flows"
+import { ContainerRegistrationKeys, MedusaError, Modules } from "@medusajs/framework/utils"
+import {
+  createProductsWorkflow,
+  updateProductsWorkflow,
+  updateRegionsWorkflow,
+} from "@medusajs/medusa/core-flows"
 import { RENTAL_MODULE } from "../modules/rental"
 import type RentalModuleService from "../modules/rental/service"
 import { VENDOR_MODULE } from "../modules/vendor"
@@ -39,6 +43,42 @@ type VendorSpec = {
 }
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000"
+
+const SEED_PHOTOS: Record<string, string[]> = {
+  "lehenga-rosewood": ["pexels-13022612.jpg", "pexels-27329528.jpg", "pexels-14088974.jpg"],
+  "lehenga-ivory-chikankari": ["pexels-14073537.jpg", "pexels-20736212.jpg", "pexels-33359858.jpg"],
+  "anarkali-champagne": ["pexels-24866503.jpg", "pexels-33754390.jpg", "pexels-22431182.jpg"],
+  "jewelry-kundan-bridal": ["pexels-33154729.jpg", "pexels-13595802.jpg", "pexels-28243911.jpg"],
+  "lehenga-emerald": ["pexels-11690470.jpg", "pexels-33359858.jpg", "pexels-14088974.jpg"],
+  "lehenga-maroon": ["pexels-14666123.jpg", "pexels-35852747.jpg", "pexels-27329528.jpg"],
+  "sherwani-gold": ["pexels-12632524.jpg", "pexels-37070433.jpg", "pexels-36248984.jpg"],
+  "jewelry-polki": ["pexels-13595802.jpg", "pexels-33154729.jpg", "pexels-13595433.jpg"],
+  "lehenga-ivory-pearl": ["pexels-20736212.jpg", "pexels-14073537.jpg", "pexels-33359858.jpg"],
+  "lehenga-maroon-zardozi": ["pexels-35852747.jpg", "pexels-14666123.jpg", "pexels-27329528.jpg"],
+  "sherwani-blue": ["pexels-13624156.jpg", "pexels-13624148.jpg", "pexels-36248984.jpg"],
+  "kurta-sage": ["pexels-31861623.jpg", "pexels-33180680.jpg", "pexels-33754390.jpg"],
+  "kurta-black": ["pexels-40366359.jpg", "pexels-40366352.jpg", "pexels-9474563.jpg"],
+  "sherwani-ivory": ["pexels-37070433.jpg", "pexels-36248984.jpg", "pexels-24017899.jpg"],
+  "anarkali-rosewood": ["pexels-33754390.jpg", "pexels-22431182.jpg", "pexels-24866503.jpg"],
+  "jewelry-jhumka": ["pexels-13595436.jpg", "pexels-22821354.jpg", "pexels-13595433.jpg"],
+  "kurta-emerald": ["pexels-31861623.jpg", "pexels-33180680.jpg", "pexels-11690470.jpg"],
+  "sherwani-grey": ["pexels-13624148.jpg", "pexels-13624156.jpg", "pexels-32276787.jpg"],
+  "saree-blush": ["pexels-35108807.jpg", "pexels-34532682.jpg", "pexels-33067049.jpg"],
+  "jewelry-gold": ["pexels-17298688.jpg", "pexels-28243911.jpg", "pexels-13595802.jpg"],
+}
+
+function seedImageUrls(key: string) {
+  const photos = SEED_PHOTOS[key]
+
+  if (!photos?.length) {
+    throw new MedusaError(
+      MedusaError.Types.INVALID_DATA,
+      `Missing seed photos for ${key}`
+    )
+  }
+
+  return photos.map((photo) => `${SITE_URL}/images/seed/${photo}`)
+}
 
 const sizes = {
   bridal: [
@@ -94,7 +134,7 @@ const vendors: VendorSpec[] = [
       {
         title: "Ivory Chikankari Bridal Set",
         description: "Ivory chikankari lehenga with pearl detailing, worn once.",
-        image: "lehenga-ivory",
+        image: "lehenga-ivory-chikankari",
         occasion_tags: ["nikkah", "walima"],
         base_amount: 30000,
         extra_day_amount: 8000,
@@ -108,7 +148,7 @@ const vendors: VendorSpec[] = [
       {
         title: "Champagne Anarkali",
         description: "Floor-length champagne anarkali with a scalloped dupatta.",
-        image: "kurta-sage",
+        image: "anarkali-champagne",
         occasion_tags: ["mehndi", "walima"],
         base_amount: 12000,
         extra_day_amount: 4000,
@@ -125,7 +165,7 @@ const vendors: VendorSpec[] = [
       {
         title: "Kundan Bridal Jewelry Set",
         description: "Kundan choker, jhumkas and tikka on a velvet base.",
-        image: "jewelry-kundan",
+        image: "jewelry-kundan-bridal",
         occasion_tags: ["barat", "nikkah"],
         base_amount: 9000,
         extra_day_amount: 2500,
@@ -185,7 +225,7 @@ const vendors: VendorSpec[] = [
       {
         title: "Gold Tissue Sherwani",
         description: "Gold tissue sherwani with a silk kurta and churidar.",
-        image: "sherwani-ivory",
+        image: "sherwani-gold",
         occasion_tags: ["barat", "nikkah"],
         base_amount: 20000,
         extra_day_amount: 5500,
@@ -202,7 +242,7 @@ const vendors: VendorSpec[] = [
       {
         title: "Polki Choker Set",
         description: "Polki choker with matching jhumkas for a formal night.",
-        image: "jewelry-kundan",
+        image: "jewelry-polki",
         occasion_tags: ["walima", "mehndi"],
         base_amount: 7500,
         extra_day_amount: 2500,
@@ -231,7 +271,7 @@ const vendors: VendorSpec[] = [
       {
         title: "Ivory Pearl Walima Lehenga",
         description: "Ivory organza lehenga with pearl clusters and a trailing dupatta.",
-        image: "lehenga-ivory",
+        image: "lehenga-ivory-pearl",
         occasion_tags: ["walima"],
         base_amount: 34000,
         extra_day_amount: 9000,
@@ -245,7 +285,7 @@ const vendors: VendorSpec[] = [
       {
         title: "Maroon Zardozi Bridal",
         description: "Maroon zardozi bridal with a velvet shawl.",
-        image: "lehenga-maroon",
+        image: "lehenga-maroon-zardozi",
         occasion_tags: ["barat", "nikkah"],
         base_amount: 38000,
         extra_day_amount: 10000,
@@ -308,7 +348,7 @@ const vendors: VendorSpec[] = [
       {
         title: "Black Formal Kurta",
         description: "Black cotton-silk kurta with a tone-on-tone placket.",
-        image: "kurta-sage",
+        image: "kurta-black",
         occasion_tags: ["mehndi", "walima"],
         base_amount: 7000,
         extra_day_amount: 2500,
@@ -342,7 +382,7 @@ const vendors: VendorSpec[] = [
       {
         title: "Rosewood Anarkali",
         description: "Rosewood anarkali with gota work, perfect for a walima guest.",
-        image: "lehenga-rosewood",
+        image: "anarkali-rosewood",
         occasion_tags: ["walima", "mehndi"],
         base_amount: 13000,
         extra_day_amount: 4000,
@@ -356,7 +396,7 @@ const vendors: VendorSpec[] = [
       {
         title: "Pearl Jhumka Set",
         description: "Pearl jhumkas with a fine gold-plated finish.",
-        image: "jewelry-kundan",
+        image: "jewelry-jhumka",
         occasion_tags: ["mehndi", "walima"],
         base_amount: 4500,
         extra_day_amount: 1500,
@@ -385,7 +425,7 @@ const vendors: VendorSpec[] = [
       {
         title: "Emerald Velvet Kurta",
         description: "Emerald velvet kurta worn once at a mehndi.",
-        image: "kurta-sage",
+        image: "kurta-emerald",
         occasion_tags: ["mehndi"],
         base_amount: 8500,
         extra_day_amount: 3000,
@@ -399,7 +439,7 @@ const vendors: VendorSpec[] = [
       {
         title: "Grey Textured Sherwani",
         description: "Grey textured sherwani with a silk stole.",
-        image: "sherwani-blue",
+        image: "sherwani-grey",
         occasion_tags: ["walima"],
         base_amount: 16000,
         extra_day_amount: 5000,
@@ -413,7 +453,7 @@ const vendors: VendorSpec[] = [
       {
         title: "Blush Organza Saree",
         description: "Blush organza saree with a sequinned blouse.",
-        image: "lehenga-ivory",
+        image: "saree-blush",
         occasion_tags: ["walima", "nikkah"],
         base_amount: 14000,
         extra_day_amount: 4500,
@@ -427,7 +467,7 @@ const vendors: VendorSpec[] = [
       {
         title: "Antique Gold Necklace Set",
         description: "Antique gold necklace with matching earrings.",
-        image: "jewelry-kundan",
+        image: "jewelry-gold",
         occasion_tags: ["barat", "walima"],
         base_amount: 6000,
         extra_day_amount: 2000,
@@ -583,15 +623,45 @@ export default async function seed({ container }: ExecArgs) {
 
     for (const listingSpec of vendorSpec.listings) {
       const handle = slugify(listingSpec.title)
-      const existingProducts = await productService.listProducts({ handle })
+      const existingProducts = await productService.listProducts(
+        { handle },
+        { relations: ["images"] }
+      )
 
       if (existingProducts.length) {
+        const [product] = existingProducts
+        const images = seedImageUrls(listingSpec.image)
+        const currentImages = [...(product.images ?? [])].sort(
+          (left, right) => left.rank - right.rank
+        )
+
+        if (
+          product.thumbnail !== images[0] ||
+          images.some((url, index) => currentImages[index]?.url !== url)
+        ) {
+          await updateProductsWorkflow(container).run({
+            input: {
+              products: [
+                {
+                  id: product.id,
+                  thumbnail: images[0],
+                  images: images.map((url, index) =>
+                    currentImages[index]
+                      ? { id: currentImages[index].id, url }
+                      : { url }
+                  ),
+                },
+              ],
+            },
+          })
+
+          logger.info(`Refreshed images for ${listingSpec.title}`)
+        }
+
         continue
       }
 
-      const images = [1, 2, 3].map(
-        (index) => `${SITE_URL}/images/seed/${listingSpec.image}.svg?v=${index}`
-      )
+      const images = seedImageUrls(listingSpec.image)
 
       const { result: products } = await createProductsWorkflow(container).run({
         input: {
