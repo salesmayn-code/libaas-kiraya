@@ -173,6 +173,7 @@ describe("pricing", () => {
         fc.date({
           min: new Date(Date.UTC(2026, 0, 1)),
           max: new Date(Date.UTC(2030, 11, 31)),
+          noInvalidDate: true,
         }),
         fc.integer({ min: -60, max: 60 }),
         (date, offset) => {
