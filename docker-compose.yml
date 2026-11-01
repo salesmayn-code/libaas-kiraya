@@ -1,0 +1,80 @@
+name: libaas-kiraya
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: libaas
+      POSTGRES_PASSWORD: libaas
+      POSTGRES_DB: libaas
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U libaas -d libaas"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    command: ["redis-server", "--appendonly", "yes"]
+    ports:
+      - "6379:6379"
+    volumes:
+      - redisdata:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  rustfs:
+    image: rustfs/rustfs:latest
+    restart: unless-stopped
+    environment:
+      RUSTFS_ACCESS_KEY: libaasadmin
+      RUSTFS_SECRET_KEY: libaasadmin
+      RUSTFS_ADDRESS: ":9000"
+      RUSTFS_CONSOLE_ADDRESS: ":9001"
+      RUSTFS_CONSOLE_ENABLE: "true"
+      RUSTFS_REGION: us-east-1
+    ports:
+      - "9002:9000"
+      - "9003:9001"
+    volumes:
+      - rustfsdata:/data
+
+  rustfs-init:
+    image: amazon/aws-cli:latest
+    depends_on:
+      - rustfs
+    environment:
+      AWS_ACCESS_KEY_ID: libaasadmin
+      AWS_SECRET_ACCESS_KEY: libaasadmin
+      AWS_DEFAULT_REGION: us-east-1
+    entrypoint:
+      - /bin/sh
+      - -c
+      - |
+        until aws --endpoint-url http://rustfs:9000 s3 ls >/dev/null 2>&1; do sleep 1; done
+        aws --endpoint-url http://rustfs:9000 s3 mb s3://libaas-public 2>/dev/null || true
+        aws --endpoint-url http://rustfs:9000 s3 mb s3://libaas-private 2>/dev/null || true
+        aws --endpoint-url http://rustfs:9000 s3api put-bucket-policy --bucket libaas-public --policy file:///init/public-policy.json
+    volumes:
+      - ./infra/rustfs/public-policy.json:/init/public-policy.json:ro
+
+  mailpit:
+    image: axllent/mailpit:latest
+    restart: unless-stopped
+    ports:
+      - "1025:1025"
+      - "8025:8025"
+
+volumes:
+  pgdata:
+  redisdata:
+  rustfsdata:

@@ -1,0 +1,32 @@
+{
+    "name":  "libaas-kiraya",
+    "version":  "0.1.0",
+    "private":  true,
+    "packageManager":  "pnpm@12.4.1",
+    "engines":  {
+                    "node":  "\u003e=20"
+                },
+    "scripts":  {
+                    "dev":  "pnpm --parallel --filter ./apps/* dev",
+                    "backend:dev":  "pnpm --filter backend dev",
+                    "storefront:dev":  "pnpm --filter storefront dev",
+                    "build":  "pnpm -r build",
+                    "lint":  "pnpm -r lint",
+                    "typecheck":  "pnpm -r typecheck",
+                    "test":  "pnpm -r test",
+                    "format":  "prettier --write .",
+                    "format:check":  "prettier --check .",
+                    "infra:up":  "docker compose up -d",
+                    "infra:down":  "docker compose down",
+                    "infra:logs":  "docker compose logs -f",
+                    "e2e":  "playwright test",
+                    "e2e:install":  "playwright install chromium",
+                    "lighthouse":  "lhci autorun"
+                },
+    "devDependencies":  {
+                            "@axe-core/playwright":  "^4.14.0",
+                            "@lhci/cli":  "^0.15.1",
+                            "@playwright/test":  "^1.64.1",
+                            "prettier":  "^3.6.2"
+                        }
+}

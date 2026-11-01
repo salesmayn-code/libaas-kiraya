@@ -1,0 +1,73 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: libaas
+          POSTGRES_PASSWORD: libaas
+          POSTGRES_DB: libaas
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U libaas -d libaas"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 20
+      redis:
+        image: redis:7
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 20
+    env:
+      DATABASE_URL: postgres://libaas:libaas@localhost:5432/libaas
+      REDIS_URL: redis://localhost:6379
+      JWT_SECRET: ci-jwt-secret
+      COOKIE_SECRET: ci-cookie-secret
+      STORE_CORS: http://localhost:3000
+      ADMIN_CORS: http://localhost:9000
+      AUTH_CORS: http://localhost:3000,http://localhost:9000
+      S3_ENDPOINT: http://localhost:9002
+      S3_REGION: us-east-1
+      S3_ACCESS_KEY_ID: test
+      S3_SECRET_ACCESS_KEY: test
+      S3_PUBLIC_BUCKET: libaas-public
+      S3_PRIVATE_BUCKET: libaas-private
+      S3_FORCE_PATH_STYLE: "true"
+      DB_USERNAME: libaas
+      DB_PASSWORD: libaas
+      DB_HOST: localhost
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 12.4.1
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm --filter backend lint
+      - run: pnpm --filter storefront lint
+      - run: pnpm --filter backend typecheck
+      - run: pnpm --filter storefront typecheck
+      - run: pnpm --filter backend test:unit
+      - run: pnpm --filter backend db:migrate
+      - run: pnpm --filter backend test:integration:modules
+      - run: pnpm --filter backend seed
+      - run: pnpm --filter backend build
+      - run: pnpm --filter storefront build
+      - name: Concurrency gate (50 parallel holds, exactly one winner)
+        run: pnpm --filter backend exec medusa exec ./src/scripts/concurrency-check.ts

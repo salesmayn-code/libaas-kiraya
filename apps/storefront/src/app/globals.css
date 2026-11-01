@@ -1,0 +1,68 @@
+@import "tailwindcss";
+@import "@fontsource/bodoni-moda/500.css";
+@import "@fontsource/bodoni-moda/600.css";
+@import "@fontsource/instrument-sans/400.css";
+@import "@fontsource/instrument-sans/500.css";
+@import "@fontsource/instrument-sans/600.css";
+
+@theme inline {
+  --color-shahtoot: #4a1634;
+  --color-mor: #0e6f6a;
+  --color-zari: #c99a2e;
+  --color-chandni: #f5f6f8;
+  --color-surface: #ffffff;
+  --color-syahi: #2b2230;
+  --color-dhundla: #5f5666;
+  --color-lakeer: #dcd5de;
+  --color-sang: #e9dde5;
+  --color-khatra: #b3261e;
+  --color-intezar: #8a5a00;
+
+  --font-display: "Bodoni Moda", ui-serif, Georgia, serif;
+  --font-sans: "Instrument Sans", ui-sans-serif, system-ui, sans-serif;
+
+  --radius-image: 2px;
+  --radius-control: 10px;
+  --radius-sheet: 20px;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    background-color: var(--color-chandni);
+    color: var(--color-syahi);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  ::selection {
+    background-color: var(--color-shahtoot);
+    color: #fff;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-shahtoot);
+    outline-offset: 2px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
+
+@utility text-balance {
+  text-wrap: balance;
+}
