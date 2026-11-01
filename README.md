@@ -2,8 +2,6 @@
 
 Multi-vendor rental marketplace for occasion wear in Pakistan. Medusa v2 backend (2.22.0), Next.js 16 storefront, custom rental engine with database-enforced date availability.
 
-Planning docs live at the repository root: `PRD.md`, `TRD.md`, `Backend-Schema.md`, `Appflow.md`, `UI-UX-Design.md`, `ImplementationPlan.md`.
-
 ![Libaas Kiraya home](docs/screenshots/home.png)
 
 | Search by date | Listing and fit |
@@ -22,11 +20,11 @@ Planning docs live at the repository root: `PRD.md`, `TRD.md`, `Backend-Schema.m
 - Customer booking list/detail, measurements and fit indicator; vendor portal (Today, Bookings, listing editor, Earnings); Medusa Admin pages for vendors, KYC docs, disputes with evidence, payouts and rental ops.
 - SMTP email delivery through Mailpit locally, WhatsApp stub provider, seeded bookings in every lifecycle status, Playwright + axe smoke tests, Lighthouse assertions and deployment/backup notes.
 
-Remaining work: real Stripe or local wallet merchant onboarding, hosted staging, retention automation for private evidence/KYC, production load testing and the demo video/case-study presentation. See `docs/deployment.md` and `docs/case-study.md`.
+Remaining work: real Stripe or local wallet merchant onboarding, hosted staging, retention automation for private evidence/KYC, production load testing and the demo video. See `docs/deployment.md`.
 
 ## Local stack
 
-Requirements: Node.js 20+, pnpm 12+, Docker.
+Requirements: Node.js 22.22+, pnpm 12+, Docker.
 
 ```bash
 pnpm install

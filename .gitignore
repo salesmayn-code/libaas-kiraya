@@ -23,3 +23,13 @@ Thumbs.db
 .lighthouseci/
 .opencode/
 opencode.json
+/prompts/
+/skills/
+/PRD.md
+/TRD.md
+/Backend-Schema.md
+/Appflow.md
+/UI-UX-Design.md
+/ImplementationPlan.md
+/docs/case-study.md
+AGENTS.md
