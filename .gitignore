@@ -16,7 +16,7 @@ test-results/
 Thumbs.db
 .idea/
 .vscode/
-uploads/
+/uploads/
 *.tsbuildinfo
 !.env.template
 !.env.test

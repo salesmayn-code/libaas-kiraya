@@ -61,13 +61,13 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - run: pnpm --filter backend lint
       - run: pnpm --filter storefront lint
+      - run: pnpm --filter backend build
       - run: pnpm --filter backend typecheck
       - run: pnpm --filter storefront typecheck
       - run: pnpm --filter backend test:unit
       - run: pnpm --filter backend db:migrate
       - run: pnpm --filter backend test:integration:modules
       - run: pnpm --filter backend seed
-      - run: pnpm --filter backend build
       - run: pnpm --filter storefront build
       - name: Concurrency gate (50 parallel holds, exactly one winner)
         run: pnpm --filter backend exec medusa exec ./src/scripts/concurrency-check.ts
